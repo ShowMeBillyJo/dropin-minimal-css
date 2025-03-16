@@ -49,7 +49,9 @@ function add_switcher() {
   var new_div = document.createElement('div');
   new_div.id = 'switcher';
   new_div.innerHTML = '      <div>&nbsp;</div>\n      <script type="text/javascript">inline_switcher();</script>';
-  document.body.prepend(new_div);
+  
+  header = document.getElementsByTagName('header')[0];
+  header.prepend(new_div);
 
   inline_switcher();
 
