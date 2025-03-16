@@ -785,7 +785,7 @@ frameworks:
     author: picocss
     author_name:  Pico CSS
     license: MIT
-    license_url: https://github.com/picocss/pico/blob/master/LICENSE.md
+    license_url: https://github.com/picocss/pico/blob/main/LICENSE.md
     repo: https://github.com/picocss/pico
     url: https://github.com/picocss/pico/blob/main/css/pico.classless.css
 
