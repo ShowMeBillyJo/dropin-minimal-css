@@ -42,7 +42,7 @@ function add_switcher() {
     css_link = document.createElement('link');
     css_link.rel="stylesheet";
     css_link.type="text/css";
-    css_link.href="https://dohliam.github.io/dropin-minimal-css/min/" + frameworks.split(",")[0] + ".min.css";
+    css_link.href="https://showmebillyjo.github.io/dropin-minimal-css/min/" + frameworks.split(",")[0] + ".min.css";
     head.appendChild(css_link);
   }
 
@@ -50,7 +50,6 @@ function add_switcher() {
   new_div.id = 'switcher';
   new_div.innerHTML = '      <div>&nbsp;</div>\n      <script type="text/javascript">inline_switcher();</script>';
   document.body.prepend(new_div);
-  document.body.style.paddingLeft = "24px";
 
   inline_switcher();
 
