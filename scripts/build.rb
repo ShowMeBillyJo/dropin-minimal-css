@@ -1,3 +1,10 @@
+# build.rb - Update CSS files, switcher.js, and README.md
+# Usage:
+#   ruby build.rb           # Update all frameworks and collections
+#   ruby build.rb foo bar   # Update specific frameworks/collections by name
+#
+# Expects frameworks.yml in the same directory.
+
 #!/usr/bin/env ruby
 
 require 'yaml'
@@ -39,7 +46,6 @@ end
 def update_js(switcher)
   switcher_file = "../switcher.js"
   switcher_txt = File.read(switcher_file)
-
   switcher_txt.gsub(/var frameworks = .*/, switcher)
 end
 
@@ -95,7 +101,7 @@ def update_readme(data)
     .gsub(/#{header_f}.*?###/m, out_f)
     .gsub(/#{header_c}.*?##/m, out_c)
 
-  File.open(readme_file, "w") {|f| f << readme }
+  File.open(readme_file, "w") { |f| f << readme }
 end
 
 def switcher_routine(data)
