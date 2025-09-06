@@ -40,16 +40,18 @@ def generate_switcher(data)
   switcher = "var frameworks = \"#{frameworks.sort.join(",")},#{collection_names.join(",")}\";"
 end
 
-def update_js(switcher)
+def update_js(data)
   switcher_file = "../switcher.js"
   switcher_txt = File.read(switcher_file)
-  switcher_txt.gsub(/var frameworks = .*/, switcher)
+
+  switcher = generate_switcher(data)
+  new_switcher_txt = switcher_txt.gsub(/var frameworks = [^;]*;/, switcher)
+  File.open(switcher_file, "w") { |f| f << new_switcher_txt }
 end
 
 def frameworks_attribution(data)
   frameworks = get_frameworks(data)
   list = ""
-
   frameworks.sort.each do |name|
     root = data["frameworks"][name]
     list << process_attribution_root(name, root)
@@ -60,7 +62,6 @@ end
 def collections_attribution(data)
   collections = get_collections(data)
   list = ""
-
   collections.each do |collection, names|
     names.each do |name|
       root = data["collections"][collection][name]
@@ -94,19 +95,16 @@ def update_readme(data)
   out_f = header_f + frameworks_list + "\n###"
   out_c = header_c + collections_list + "\n##"
 
-  readme = readme_txt
+  new_readme_txt = readme_txt
     .gsub(/#{header_f}.*?###/m, out_f)
     .gsub(/#{header_c}.*?##/m, out_c)
 
-  File.open(readme_file, "w") { |f| f << readme }
+  File.open(readme_file, "w") { |f| f << new_readme_txt }
 end
 
 def switcher_routine(data)
   puts "- Updating switcher.js file..."
-  switcher = generate_switcher(data)
-  js_file = "../switcher.js"
-  new_switcher = update_js(switcher)
-  File.open(js_file, "w") { |f| f << new_switcher }
+  update_js(data)
   puts "  Update complete."
   puts
 end
