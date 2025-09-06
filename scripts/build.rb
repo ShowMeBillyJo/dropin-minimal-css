@@ -138,12 +138,9 @@ end
 
 def process_css_root(name, root, options)
   url = root["url"]
-  min_only = root["min_only"]
   skip = root["skip"]
-  if options == []
-    if !skip
-      update_css(name, url)
-    end
+  if options.empty?
+    update_css(name, url) unless skip
   elsif options.include?(name)
     update_css(name, url)
   end
