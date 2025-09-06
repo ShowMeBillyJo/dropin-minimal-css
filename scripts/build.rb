@@ -32,7 +32,8 @@ def generate_switcher(data)
   frameworks = get_frameworks(data)
   collections = get_collections(data)
 
-  switcher = 'var frameworks = "' + frameworks.sort.join(",") + "," + collections.values.flatten.join(",").gsub(/info,/, "") + '";'
+  collection_names = collections.values.flatten.reject { |name| name == "info" }
+  switcher = 'var frameworks = "' + frameworks.sort.join(",") + "," + collection_names.join(",") + '";'
 end
 
 def update_js(switcher)
