@@ -48,12 +48,7 @@ def frameworks_attribution(data)
 
   frameworks.sort.each do |name|
     root = data["frameworks"][name]
-    url = root["url"]
-    author = root["author"]
-    repo = root["repo"]
-    license = root["license"]
-    license_url = root["license_url"]
-    list << "* [#{name}](#{repo}) by @#{author} ([Preview](https://dohliam.github.io/dropin-minimal-css/?#{name}) · [#{license}](#{license_url}))\n"
+    list << process_attribution_root(name, root)
   end
   list
 end
@@ -65,19 +60,23 @@ def collections_attribution(data)
   collections.each do |collection, names|
     names.each do |name|
       root = data["collections"][collection][name]
-      author = root["author"]
-      repo = root["repo"]
-      url = root["url"]
-      license = root["license"]
-      license_url = root["license_url"]
-      if name == "info"
-        list << "* **[#{collection}](#{repo})** by @#{author}:\n"
-        next
-      end
-      list << "  * [#{name}](#{repo}) by @#{author} ([Preview](https://dohliam.github.io/dropin-minimal-css/?#{name}) · [#{license}](#{license_url}))\n"
+      list << process_attribution_root(name, root, "  ")
     end
   end
   list
+end
+
+def process_attribution_root(name, root, padding="")
+  url = root["url"]
+  author = root["author"]
+  repo = root["repo"]
+  license = root["license"]
+  license_url = root["license_url"]
+  if name == "info"
+    "* **[#{collection}](#{repo})** by @#{author}:\n"
+  else
+    "#{padding}* [#{name}](#{repo}) by @#{author} ([Preview](https://dohliam.github.io/dropin-minimal-css/?#{name}) · [#{license}](#{license_url}))\n"
+  end
 end
 
 def update_readme(data)
@@ -115,16 +114,7 @@ def frameworks_routine(data, options)
 
   frameworks.sort.each do |name|
     root = data["frameworks"][name]
-    url = root["url"]
-    min_only = root["min_only"]
-    skip = root["skip"]
-    if options == []
-      if !skip
-        update_css(name, url)
-      end
-    elsif options.include?(name)
-      update_css(name, url)
-    end
+    process_css_root(name, root, options)
   end
   puts "  Update complete."
   puts
@@ -138,20 +128,24 @@ def collections_routine(data, options)
     names.each do |name|
       if name == "info" then next end
       root = data["collections"][collection][name]
-      url = root["url"]
-      min_only = root["min_only"]
-      skip = root["skip"]
-      if options == []
-        if !skip
-          update_css(name, url)
-        end
-      elsif options.include?(name)
-        update_css(name, url)
-      end
+      process_css_root(name, root, options)
     end
   end
   puts "  Update complete."
   puts
+end
+
+def process_css_root(name, root, options)
+  url = root["url"]
+  min_only = root["min_only"]
+  skip = root["skip"]
+  if options == []
+    if !skip
+      update_css(name, url)
+    end
+  elsif options.include?(name)
+    update_css(name, url)
+  end
 end
 
 def readme_routine(data)
