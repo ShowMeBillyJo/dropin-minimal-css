@@ -68,7 +68,6 @@ def collections_attribution(data)
 end
 
 def process_attribution_root(name, root, collection="", padding="")
-  url = root["url"]
   author = root["author"]
   repo = root["repo"]
   license = root["license"]
