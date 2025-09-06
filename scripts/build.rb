@@ -140,6 +140,7 @@ def collections_routine(data, options)
       root = data["collections"][collection][name]
       url = root["url"]
       min_only = root["min_only"]
+      skip = root["skip"]
       if options == []
         if !skip
           update_css(name, url)
