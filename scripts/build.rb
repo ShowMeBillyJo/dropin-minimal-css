@@ -7,6 +7,8 @@
 
 #!/usr/bin/env ruby
 
+# frozen_string_literal: true
+
 require 'yaml'
 
 require_relative 'minify.rb'
@@ -93,11 +95,11 @@ def update_readme(data)
 
   header_f = "### List of frameworks\n\n"
   header_c = "### Theme collections\n\n"
-  out_f = header_f + frameworks_list + "\n###"
+  out_f = header_f + frameworks_list + "\n##"
   out_c = header_c + collections_list + "\n##"
 
   new_readme_txt = readme_txt
-    .gsub(/#{header_f}.*?###/m, out_f)
+    .gsub(/#{header_f}.*?##/m, out_f)
     .gsub(/#{header_c}.*?##/m, out_c)
 
   File.open(readme_file, "w") { |f| f << new_readme_txt }
