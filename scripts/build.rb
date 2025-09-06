@@ -35,24 +35,21 @@ def get_collections(data)
   collections
 end
 
-def generate_switcher(data)
-  frameworks = get_frameworks(data)
-  collections = get_collections(data)
+def generate_switcher(frameworks, collections)
   coll_theme_keys = collections.values.flatten.reject { |theme_key| theme_key == "info" }
   switcher = "var frameworks = \"#{frameworks.sort.join(",")},#{coll_theme_keys.join(",")}\";"
 end
 
-def update_js(data)
+def update_js(frameworks, collections)
   switcher_file = "../switcher.js"
   switcher_txt = File.read(switcher_file)
 
-  switcher = generate_switcher(data)
+  switcher = generate_switcher(frameworks, collections)
   new_switcher_txt = switcher_txt.gsub(/var frameworks = [^;]*;/, switcher)
   File.open(switcher_file, "w") { |f| f << new_switcher_txt }
 end
 
-def frameworks_attribution(data)
-  frameworks = get_frameworks(data)
+def frameworks_attribution(frameworks, data)
   list = ""
   frameworks.sort.each do |fwk_key|
     root = data["frameworks"][fwk_key]
@@ -61,8 +58,7 @@ def frameworks_attribution(data)
   list
 end
 
-def collections_attribution(data)
-  collections = get_collections(data)
+def collections_attribution(collections, data)
   list = ""
   collections.each do |coll_key, themes|
     themes.each do |theme_key|
@@ -86,12 +82,12 @@ def process_attribution_root(key, root, collection="", padding="")
   end
 end
 
-def update_readme(data)
+def update_readme(frameworks, collections, data)
   readme_file = "../README.md"
   readme_txt = File.read(readme_file)
 
-  frameworks_list = frameworks_attribution(data)
-  collections_list = collections_attribution(data)
+  frameworks_list = frameworks_attribution(frameworks, data)
+  collections_list = collections_attribution(collections, data)
 
   header_f = "### List of frameworks\n\n"
   header_c = "### Theme collections\n\n"
@@ -105,16 +101,15 @@ def update_readme(data)
   File.open(readme_file, "w") { |f| f << new_readme_txt }
 end
 
-def switcher_routine(data)
+def switcher_routine(frameworks, collections)
   puts "- Updating switcher.js file..."
-  update_js(data)
+  update_js(frameworks, collections)
   puts "  Update complete."
   puts
 end
 
-def frameworks_routine(data, options)
+def frameworks_routine(frameworks, data, options)
   puts "- Updating CSS frameworks..."
-  frameworks = get_frameworks(data)
   frameworks.each do |fwk_key|
     root = data["frameworks"][fwk_key]
     process_css_root(fwk_key, root, options)
@@ -123,9 +118,8 @@ def frameworks_routine(data, options)
   puts
 end
 
-def collections_routine(data, options)
+def collections_routine(collections, data, options)
   puts "- Updating CSS collections..."
-  collections = get_collections(data)
   collections.each do |coll_key, themes|
     themes.each do |theme_key|
       if theme_key == "info" then next end
@@ -147,18 +141,20 @@ def process_css_root(key, root, options)
   end
 end
 
-def readme_routine(data)
+def readme_routine(frameworks, collections, data)
   puts "- Updating readme file..."
-  update_readme(data)
+  update_readme(frameworks, collections, data)
   puts "  Update complete."
   puts
 end
 
 def process_updates(data, options=[])
-  frameworks_routine(data, options)
-  collections_routine(data, options)
-  switcher_routine(data)
-  readme_routine(data)
+  frameworks = get_frameworks(data)
+  collections = get_collections(data)
+  frameworks_routine(frameworks, data, options)
+  collections_routine(collections, data, options)
+  switcher_routine(frameworks, collections)
+  readme_routine(frameworks, collections, data)
 end
 
 data = YAML::load(File.read("frameworks.yml"))
