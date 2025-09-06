@@ -1,9 +1,9 @@
 # build.rb - Update CSS files, switcher.js, and README.md
-# Usage:
-#   ruby build.rb           # Update all frameworks and collections
-#   ruby build.rb foo bar   # Update specific frameworks/collections by name
-#
 # Expects frameworks.yml in the same directory.
+#
+# Usage:
+#   ruby build.rb           # Update all frameworks and collection themes
+#   ruby build.rb foo bar   # Update specific frameworks and/or collection themes by key
 
 #!/usr/bin/env ruby
 
@@ -14,8 +14,8 @@ require_relative 'minify.rb'
 def get_frameworks(data)
   frameworks = []
   data["frameworks"].each do |f|
-    name = f[0]
-    frameworks << name
+    fwk_key = f[0]
+    frameworks << fwk_key
   end
   frameworks
 end
@@ -23,11 +23,11 @@ end
 def get_collections(data)
   collections = {}
   data["collections"].each do |f|
-    collection_name = f[0]
-    collections[collection_name] = []
+    coll_key = f[0]
+    collections[coll_key] = []
     f[1].each do |n|
-      name = n[0]
-      collections[collection_name] << name
+      theme_key = n[0]
+      collections[coll_key] << theme_key
     end
   end
   collections
@@ -36,8 +36,8 @@ end
 def generate_switcher(data)
   frameworks = get_frameworks(data)
   collections = get_collections(data)
-  collection_names = collections.values.flatten.reject { |name| name == "info" }
-  switcher = "var frameworks = \"#{frameworks.sort.join(",")},#{collection_names.join(",")}\";"
+  coll_theme_keys = collections.values.flatten.reject { |theme_key| theme_key == "info" }
+  switcher = "var frameworks = \"#{frameworks.sort.join(",")},#{coll_theme_keys.join(",")}\";"
 end
 
 def update_js(data)
@@ -52,9 +52,9 @@ end
 def frameworks_attribution(data)
   frameworks = get_frameworks(data)
   list = ""
-  frameworks.sort.each do |name|
-    root = data["frameworks"][name]
-    list << process_attribution_root(name, root)
+  frameworks.sort.each do |fwk_key|
+    root = data["frameworks"][fwk_key]
+    list << process_attribution_root(fwk_key, root)
   end
   list
 end
@@ -62,24 +62,25 @@ end
 def collections_attribution(data)
   collections = get_collections(data)
   list = ""
-  collections.each do |collection, names|
-    names.each do |name|
-      root = data["collections"][collection][name]
-      list << process_attribution_root(name, root, collection, "  ")
+  collections.each do |coll_key, themes|
+    themes.each do |theme_key|
+      root = data["collections"][coll_key][theme_key]
+      list << process_attribution_root(theme_key, root, coll_key, "  ")
     end
   end
   list
 end
 
-def process_attribution_root(name, root, collection="", padding="")
+def process_attribution_root(key, root, collection="", padding="")
   author = root["author"]
   repo = root["repo"]
   license = root["license"]
   license_url = root["license_url"]
-  if name == "info"
+  name = root["name"] || key
+  if key == "info"
     "* **[#{collection}](#{repo})** by @#{author}:\n"
   else
-    "#{padding}* [#{name}](#{repo}) by @#{author} ([Preview](https://dohliam.github.io/dropin-minimal-css/?#{name}) · [#{license}](#{license_url}))\n"
+    "#{padding}* [#{name}](#{repo}) by @#{author} ([Preview](https://dohliam.github.io/dropin-minimal-css/?#{key}) · [#{license}](#{license_url}))\n"
   end
 end
 
@@ -112,9 +113,9 @@ end
 def frameworks_routine(data, options)
   puts "- Updating CSS frameworks..."
   frameworks = get_frameworks(data)
-  frameworks.sort.each do |name|
-    root = data["frameworks"][name]
-    process_css_root(name, root, options)
+  frameworks.each do |fwk_key|
+    root = data["frameworks"][fwk_key]
+    process_css_root(fwk_key, root, options)
   end
   puts "  Update complete."
   puts
@@ -123,24 +124,24 @@ end
 def collections_routine(data, options)
   puts "- Updating CSS collections..."
   collections = get_collections(data)
-  collections.each do |collection, names|
-    names.each do |name|
-      if name == "info" then next end
-      root = data["collections"][collection][name]
-      process_css_root(name, root, options)
+  collections.each do |coll_key, themes|
+    themes.each do |theme_key|
+      if theme_key == "info" then next end
+      root = data["collections"][coll_key][theme_key]
+      process_css_root(theme_key, root, options)
     end
   end
   puts "  Update complete."
   puts
 end
 
-def process_css_root(name, root, options)
+def process_css_root(key, root, options)
   url = root["url"]
   skip = root["skip"]
   if options.empty?
-    update_css(name, url) unless skip
-  elsif options.include?(name)
-    update_css(name, url)
+    update_css(key, url) unless skip
+  elsif options.include?(key)
+    update_css(key, url)
   end
 end
 

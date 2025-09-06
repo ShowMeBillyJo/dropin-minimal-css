@@ -10,7 +10,7 @@ end
 def get_css(url)
   url = url
     .gsub(/https:\/\/github\.com\/([^\/]+\/[^\/]+)\/blob\//,
-          "https://raw.githubusercontent.com/\\1//")
+          "https://raw.githubusercontent.com/\\1/")
     .gsub(/https:\/\/gitlab\.com\/([^\/]+\/[^\/]+)\/-\/blob\//,
           "https://gitlab.com/\\1/-/raw/")
   URI.open(url).read
@@ -30,28 +30,27 @@ def strip_css(css)
     .gsub(/\r\n?/, "\n")
 end
 
-def update_css(name, url)
-  css_file = "../src/#{name}.css"
-  minified_file = "../min/#{name}.min.css"
+def update_css(key, url)
+  css_file = "../src/#{key}.css"
+  minified_file = "../min/#{key}.min.css"
 
   css = get_css(url)
   css = strip_css(css)
 
-  if !diff_css(css, name)
-    puts "  >>  " + name + " css updating from " + url + "..."
+  if !same_css(css, css_file)
+    puts "  >>  #{key} css updating from #{url}..."
     File.open(css_file, "w") { |f| f << css }
     File.open(minified_file, "w") { |f| f << minify(css) }
     puts "  Update complete."
   else
-    puts "  No changes detected in " + name + " css"
+    puts "  No changes detected in #{key} css"
   end
 end
 
-def diff_css(css, name)
-  source_path = "../src/" + name + ".css"
+def same_css(css, source_path)
   if File.exist?(source_path)
     src = File.read(source_path)
-    css == src
+    css == src.gsub(/\r\n?/, "\n")
   else
     false
   end
