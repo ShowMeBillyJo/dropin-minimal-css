@@ -60,13 +60,13 @@ def collections_attribution(data)
   collections.each do |collection, names|
     names.each do |name|
       root = data["collections"][collection][name]
-      list << process_attribution_root(name, root, "  ")
+      list << process_attribution_root(name, root, collection, "  ")
     end
   end
   list
 end
 
-def process_attribution_root(name, root, padding="")
+def process_attribution_root(name, root, collection="", padding="")
   url = root["url"]
   author = root["author"]
   repo = root["repo"]
