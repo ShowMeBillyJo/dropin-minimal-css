@@ -13,7 +13,6 @@ require_relative 'minify.rb'
 
 def get_frameworks(data)
   frameworks = []
-
   data["frameworks"].each do |f|
     name = f[0]
     frameworks << name
@@ -23,7 +22,6 @@ end
 
 def get_collections(data)
   collections = {}
-
   data["collections"].each do |f|
     collection_name = f[0]
     collections[collection_name] = []
@@ -38,7 +36,6 @@ end
 def generate_switcher(data)
   frameworks = get_frameworks(data)
   collections = get_collections(data)
-
   collection_names = collections.values.flatten.reject { |name| name == "info" }
   switcher = 'var frameworks = "' + frameworks.sort.join(",") + "," + collection_names.join(",") + '";'
 end
@@ -117,7 +114,6 @@ end
 def frameworks_routine(data, options)
   puts "- Updating CSS frameworks..."
   frameworks = get_frameworks(data)
-
   frameworks.sort.each do |name|
     root = data["frameworks"][name]
     process_css_root(name, root, options)
@@ -129,7 +125,6 @@ end
 def collections_routine(data, options)
   puts "- Updating CSS collections..."
   collections = get_collections(data)
-
   collections.each do |collection, names|
     names.each do |name|
       if name == "info" then next end
