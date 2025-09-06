@@ -108,35 +108,35 @@ def switcher_routine(frameworks, collections)
   puts
 end
 
-def frameworks_routine(frameworks, data, options)
+def frameworks_routine(frameworks, data, specified_keys)
   puts "- Updating CSS frameworks..."
   frameworks.each do |fwk_key|
     root = data["frameworks"][fwk_key]
-    process_css_root(fwk_key, root, options)
+    process_css_root(fwk_key, root, specified_keys)
   end
   puts "  Update complete."
   puts
 end
 
-def collections_routine(collections, data, options)
+def collections_routine(collections, data, specified_keys)
   puts "- Updating CSS collections..."
   collections.each do |coll_key, themes|
     themes.each do |theme_key|
       if theme_key == "info" then next end
       root = data["collections"][coll_key][theme_key]
-      process_css_root(theme_key, root, options)
+      process_css_root(theme_key, root, specified_keys)
     end
   end
   puts "  Update complete."
   puts
 end
 
-def process_css_root(key, root, options)
+def process_css_root(key, root, specified_keys)
   url = root["url"]
   skip = root["skip"]
-  if options.empty?
+  if specified_keys.empty?
     update_css(key, url) unless skip
-  elsif options.include?(key)
+  elsif specified_keys.include?(key)
     update_css(key, url)
   end
 end
@@ -148,11 +148,11 @@ def readme_routine(frameworks, collections, data)
   puts
 end
 
-def process_updates(data, options=[])
+def process_updates(data, args=[])
   frameworks = get_frameworks(data)
   collections = get_collections(data)
-  frameworks_routine(frameworks, data, options)
-  collections_routine(collections, data, options)
+  frameworks_routine(frameworks, data, args)
+  collections_routine(collections, data, args)
   switcher_routine(frameworks, collections)
   readme_routine(frameworks, collections, data)
 end
@@ -160,8 +160,8 @@ end
 data = YAML::load(File.read("frameworks.yml"))
 
 if ARGV[0]
-  options = ARGV
-  process_updates(data, options)
+  args = ARGV
+  process_updates(data, args)
 else
   process_updates(data)
 end
