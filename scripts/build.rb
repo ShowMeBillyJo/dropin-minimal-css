@@ -11,7 +11,7 @@
 
 require 'yaml'
 
-require_relative 'minify.rb'
+require_relative 'update_css.rb'
 
 def get_frameworks(data)
   frameworks = []

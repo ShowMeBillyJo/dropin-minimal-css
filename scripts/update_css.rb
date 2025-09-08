@@ -1,5 +1,4 @@
 require 'open-uri'
-require 'yaml'
 require 'yui/compressor'
 
 def minify(css)
